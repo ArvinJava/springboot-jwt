@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,20 +40,25 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.OK).body("註冊成功");
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http
-                .csrf(csrf -> csrf.disable())
-                .formLogin(formLogin -> {
-                    formLogin.disable();
-                })
-                .authorizeHttpRequests(auth -> auth
-                        //permitAll() 必須在authenticated()後，否則無效
-                        .requestMatchers("/registe").permitAll() // 首頁不需要登入
-                        .anyRequest().authenticated()// 其他需要登入
-
-                );
-        return http.build();
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid UserRequest userRequest){
+        Users userLogin = new Users();
+        userLogin.setEmail(userRequest.getEmail());
+        userLogin.setPassword(userRequest.getPassword());
+        String token = "";
+        try{
+            token = usersService.login(userLogin);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("JWT失敗: " + e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("取的JWT: "+token);
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        return ResponseEntity.status(HttpStatus.OK).body("test");
+    }
+
 
 }

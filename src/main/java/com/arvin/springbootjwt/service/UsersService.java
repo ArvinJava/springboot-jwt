@@ -7,4 +7,6 @@ public interface UsersService {
     Users findUserByEmail(String email);
 
     Users addUser(Users user);
+
+    String login(Users user) throws Exception;
 }
