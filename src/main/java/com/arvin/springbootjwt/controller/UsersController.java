@@ -52,7 +52,7 @@ public class UsersController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("JWT失敗: " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).body("取的JWT: "+token);
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 
     @GetMapping("/test")
